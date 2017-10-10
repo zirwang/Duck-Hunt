@@ -38,7 +38,6 @@ $(document).ready(function(e){
   var audio = document.createElement('audio');
   canvas.width = 700;
   canvas.height= 550;
-  drawLives();
 });
 
 // DRAW LIVES & Draws points
@@ -64,13 +63,14 @@ function drawLives() {
    ctx.drawImage(this, 110, 500, 40, 30);
 
  };
+
  if(shots == 3){
-	 life1.src = "heart.png";
+   life1.src = "heart.png";
    life2.src = "heart.png";
    life3.src = "heart.png";
  }
  else if(shots == 2){
-	 life1.src = "heart.png";
+   life1.src = "heart.png";
    life2.src = "heart.png";
  }
  else if(shots == 1){
@@ -198,7 +198,7 @@ function drawDucks() {
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 
 	//Iterate over ducks
-	for (i=0; i < 2; i++) {
+	for (i=0; i < ducks.length; i++) {
 		duckImage = new Image();
 		//Switch direction duck faces based on target
 		if (ducks[i].targetX > ducks[i].posX) {
@@ -214,10 +214,6 @@ function drawDucks() {
 		}
 		//Once loaded already, draws images
 		ctx.drawImage(duckImage,ducks[i].posX,ducks[i].posY,duckSize,duckSize);
-		//Draws the first time the windows loads
-		duckImage.onload = function() {
-			ctx.drawImage(duckImage,ducks[i].posX,ducks[i].posY,duckSize,duckSize);
-		}
 	}
 
 }
@@ -252,7 +248,6 @@ function moveDucks() {
 }
 
 function updateGameLogic() {
-	drawLives();
 
 	if (gameState == "TEXT") {
 		if (level == 0)
@@ -271,6 +266,7 @@ function updateGameLogic() {
 		//move and redraw
 		moveDucks();
 		drawDucks();
+		drawLives();
 		//Decrease count toward losing
 		gameOverCount--;
 		//Check if gameover
