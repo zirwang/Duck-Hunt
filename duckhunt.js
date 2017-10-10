@@ -14,6 +14,7 @@ var gameOverCount = 1000;
 var gameState = "TEXT";
 //Level of game determines number of ducks, speed of ducks, etc
 var level = 0;
+var shots = 3;
 
 //Init game
 window.onload = function() {
@@ -21,7 +22,7 @@ window.onload = function() {
 	var canvas = document.getElementById("game");
 	canvas.addEventListener("mousedown",handleClick,false);
 	//schedule game logic update
-	setInterval(updateGameLogic,1000/frameRate);	
+	setInterval(updateGameLogic,1000/frameRate);
 }
 
 //Sound assets
@@ -59,9 +60,19 @@ function drawLives() {
    ctx.imageSmoothingEnabled = false;
    ctx.drawImage(this, 110, 500, 40, 30);
  };
-   life1.src = "heart.png";
+ if(shots == 3){
+	 life1.src = "heart.png";
    life2.src = "heart.png";
    life3.src = "heart.png";
+ }
+ else if(shots == 2){
+	 life1.src = "heart.png";
+   life2.src = "heart.png";
+ }
+ else if(shots == 1){
+	 life1.src = "heart.png";
+ }
+
 }
 
 //Handles mouse click to progress screen or shoot duck
@@ -136,7 +147,7 @@ function checkDuckHit(event) {
 	//Get click coordinates
 	var x = 0;
 	var y = 0;
-
+  var hit = false;
 	var canvas = document.getElementById("game");
 
 	//Get coordinates of click
@@ -155,8 +166,12 @@ function checkDuckHit(event) {
 			if(y > ducks[i].posY && y < ducks[i].posY + duckSize) {
 				//Duck was hit, remove it
 				ducks.splice(i,1);
+				hit = true;
 			}
 		}
+	}
+	if(hit === false){
+		shots--;
 	}
 
 }
@@ -228,13 +243,14 @@ function moveDucks() {
 }
 
 function updateGameLogic() {
+	drawLives();
 	if (gameState == "TEXT") {
-		if (level == 0) 
+		if (level == 0)
 			drawText("Click to play!",true);
 		else {
 			drawText("Level " + (level+1).toString() + "!",true);
 		}
-	} 
+	}
 	else if (gameState == "PLAY") {
 		//Update count for flap animation
 		duckFlapCount++;
@@ -248,7 +264,7 @@ function updateGameLogic() {
 		//Decrease count toward losing
 		gameOverCount--;
 		//Check if gameover
-		if (gameOverCount == 0) {
+		if (gameOverCount == 0 || shots ==0) {
 			gameState = "GAMEOVER";
 			//send ducks to fly offscreen
 			setDucksLeave();
@@ -263,4 +279,3 @@ function updateGameLogic() {
 		drawText("Game Over! You got to level " + level + "!", false);
 	}
 }
-
