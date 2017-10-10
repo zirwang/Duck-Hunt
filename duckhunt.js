@@ -41,7 +41,7 @@ $(document).ready(function(e){
   drawLives();
 });
 
-// DRAW LIVES
+// DRAW LIVES & Draws points
 function drawLives() {
     var canvas = document.getElementById('game');
     var ctx = canvas.getContext('2d');
@@ -49,8 +49,11 @@ function drawLives() {
     var life2 = new Image();
     var life3 = new Image();
     life1.onload = function() {
+		 var temp = "Score: " + String(score);
      ctx.imageSmoothingEnabled = false;
      ctx.drawImage(this, 10, 500, 40, 30);
+		 ctx.font = "20px Georgia";
+		 ctx.fillText(temp, 550, 520);
    };
    life2.onload = function() {
     ctx.imageSmoothingEnabled = false;
@@ -59,6 +62,7 @@ function drawLives() {
   life3.onload = function() {
    ctx.imageSmoothingEnabled = false;
    ctx.drawImage(this, 110, 500, 40, 30);
+
  };
  if(shots == 3){
 	 life1.src = "heart.png";
@@ -72,6 +76,7 @@ function drawLives() {
  else if(shots == 1){
 	 life1.src = "heart.png";
  }
+
 
 }
 
@@ -113,6 +118,8 @@ function handleClick(event) {
 	else if (gameState == "GAMEOVER") {
 		//Replay
 		level = 0;
+		score = 0;
+		shots = 3;
 		//clear out ducks array
 		ducks = [];
 		gameState = "TEXT";
@@ -167,14 +174,13 @@ function checkDuckHit(event) {
 				//Duck was hit, remove it
 				ducks.splice(i,1);
 				hit = true;
+				score +=100;
 			}
 		}
 	}
 	if(hit === false){
 		shots--;
-		if(shots == 0){
-			updateGameLogic();
-		}
+
 	}
 
 }
@@ -247,6 +253,7 @@ function moveDucks() {
 
 function updateGameLogic() {
 	drawLives();
+
 	if (gameState == "TEXT") {
 		if (level == 0)
 			drawText("Click to play!",true);
@@ -279,7 +286,8 @@ function updateGameLogic() {
 		//Move ducks off screen
 		moveDucks();
 		drawDucks();
-		drawText("Game Over! You got to level " + level + "!", false);
-		shots = 3;
+		drawText("Game Over! Final Score: " + score + "!" , false);
+
 	}
+
 }
