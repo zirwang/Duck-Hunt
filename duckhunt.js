@@ -14,8 +14,8 @@ var gameOverCount = 1000;
 var gameState = "TEXT";
 //Level of game determines number of ducks, speed of ducks, etc
 var level = 0;
+var score = 0;
 var shots = 3;
-
 //Init game
 window.onload = function() {
 	//setup mouse event handler
@@ -172,6 +172,9 @@ function checkDuckHit(event) {
 	}
 	if(hit === false){
 		shots--;
+		if(shots == 0){
+			updateGameLogic();
+		}
 	}
 
 }
@@ -264,7 +267,7 @@ function updateGameLogic() {
 		//Decrease count toward losing
 		gameOverCount--;
 		//Check if gameover
-		if (gameOverCount == 0 || shots ==0) {
+		if (gameOverCount == 0 || shots <= 0) {
 			gameState = "GAMEOVER";
 			//send ducks to fly offscreen
 			setDucksLeave();
@@ -277,5 +280,6 @@ function updateGameLogic() {
 		moveDucks();
 		drawDucks();
 		drawText("Game Over! You got to level " + level + "!", false);
+		shots = 3;
 	}
 }
