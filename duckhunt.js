@@ -1,46 +1,46 @@
-//Duck image width and height
-var duckSize = 65;
-//Array of duck objects
+//Duck image width and height for checking if a duck was hit
+//Duck array to keep track of the two ducks and their positions
+//Makes sprite change to simulate flapping 
+//How often the ducks pick a new target to travel to
+var duckSize = 60;
 var ducks = [];
-//Determines how oftern the updata logic function runs
-var frameRate = 30;
-//Determines when ducks pick a new target
-var targetChangeCount = 0;
-//Determines when ducks change sprites so they appear to flap
-var duckFlapCount = 0;
-//Determines when the player loses
-var gameOverCount = 1000;
-//Game states are "PLAY", "GAMEOVER", and "TEXT"
-var gameState = "TEXT";
-//Level of game determines number of ducks, speed of ducks, etc
+var flapCount = 0;
+var targetChange = 0;
+//Timer for how long the player has to hit both ducks
+var gameTime = 1000;
+//Sets game state to initial text of click to hunt ducks. Other states: "PLAY", and "GAMEOVER"
+var gameState = "READY";
+//Level of game determines how long to hit ducks
+//score increases by 100 points per duck hit
 var level = 0;
 var score = 0;
 var shots = 3;
-//Init game
+
+//Game Initialization
 window.onload = function() {
 	//setup mouse event handler
 	var canvas = document.getElementById("game");
 	canvas.addEventListener("mousedown",handleClick,false);
 	//schedule game logic update
-	setInterval(updateGameLogic,1000/frameRate);
+	setInterval(updateGameLogic,1000/30);
 }
 
-//Sound assets
-var quackSound = new Audio("quack.mp3");
-var startSound = new Audio("start.mp3");
-var shootSound = new Audio("shoot.mp3");
-var nextLevelSound = new Audio("nextLevel.mp3");
-var loseSound = new Audio("lose.mp3");
+//Sounds
+var quack = new Audio("quack.mp3");
+var startSound = new Audio("startSong.mp3");
+var shootSound = new Audio("gunShot.mp3");
+var nextLevelSound = new Audio("levelUp.mp3");
 
 $(document).ready(function(e){
   var canvas = document.getElementById('game');
   var ctx = canvas.getContext('2d');
   var audio = document.createElement('audio');
   canvas.width = 700;
-  canvas.height= 550;
+  canvas.height = 550;
+  startSound.play();
 });
 
-// DRAW LIVES & Draws points
+// Draws lives & Draws score onto the canvas
 function drawLives() {
     var canvas = document.getElementById('game');
     var ctx = canvas.getContext('2d');
@@ -50,8 +50,9 @@ function drawLives() {
     life1.onload = function() {
 		 var temp = "Score: " + String(score);
      ctx.imageSmoothingEnabled = false;
-     ctx.drawImage(this, 10, 500, 40, 30);
-		 ctx.font = "20px Georgia";
+	 ctx.drawImage(this, 10, 500, 40, 30);
+	     ctx.font = "25px serif";
+	     ctx.fillStyle = "white";
 		 ctx.fillText(temp, 550, 520);
    };
    life2.onload = function() {
@@ -80,40 +81,39 @@ function drawLives() {
 
 }
 
-//Handles mouse click to progress screen or shoot duck
+//Handles mouse click check if duck was hit
+//Screen flashes red to simulate a possible killed duck
 function handleClick(event) {
-	if (gameState == "TEXT") {
-		//increase level and go to play state
+	if (gameState == "READY") {
 		level++;
-		//Make game over happen quicker
-		gameOverCount = 1000 - 50*level;
-		if (gameOverCount < 100)
-			gameOverCount = 100; //100 is hard enough
+		//Shortens game time according to level to make it more difficult
+		gameTime = 1000 - 100*level;
+		if (gameTime < 100)
+			gameTime = 100;
 
-		generateDucks();
+		makeDucks();
 		gameState = "PLAY";
 	}
 	else if (gameState == "PLAY") {
-		//Play sound
+		//If screen clicked - make gun shot sound
 		shootSound.play();
-		//Flash screen white and check if duck was hit
+
 		var canvas = document.getElementById("game");
 		var ctx = canvas.getContext("2d");
 
-		//Flashes white
-		ctx.fillStyle = "white";
+		//Flashes red
+		ctx.fillStyle = "red";
 		ctx.fillRect(0,0,canvas.width, canvas.height);
 
-		//checks if duck was hit and removes it if necessary
+		//checks if duck was hit - removes it if hit
 		checkDuckHit(event);
 
 		//check if all ducks are gone
 		if (ducks.length == 0) {
-			gameState = "TEXT";
+			gameState = "READY";
 			//Play next level sound
 			nextLevelSound.play();
 		}
-
 	}
 	else if (gameState == "GAMEOVER") {
 		//Replay
@@ -122,12 +122,12 @@ function handleClick(event) {
 		shots = 3;
 		//clear out ducks array
 		ducks = [];
-		gameState = "TEXT";
+		gameState = "READY";
 	}
 
 }
 
-//Draws the string to the canvas.  Boolean determines if the screen should clear first
+//Draws text to the canvas.  Boolean checks if canvas needs to be cleared
 function drawText(message,clear) {
 	var canvas = document.getElementById("game");
 	var ctx = canvas.getContext('2d');
@@ -135,99 +135,139 @@ function drawText(message,clear) {
 	//clear
 	if (clear)
 		ctx.clearRect(0,0,canvas.width,canvas.height);
-	//Draw message
-	ctx.font = "30px Arial";
+
+	//Draw needed game message
+	ctx.font = "30px serif";
 	ctx.fillStyle = "white";
-	ctx.fillText(message, canvas.width/3, canvas.height/3);
+	ctx.fillText(message, canvas.width/2.5, canvas.height/3);
 
 }
 
-//Creates new ducks
-function generateDucks() {
+//Creates 2 ducks for each level with a randomized position
+//Randomizes a target that they will 'fly' to
+function makeDucks() {
 	for (i=0; i < 2; i++) {
-		ducks.push( {posX: Math.random()*750, posY: Math.random()*500, targetX: Math.random()*750, targetY: Math.random()*500} );
+		ducks.push( {posX: Math.random()*700, posY: Math.random()*550, targetX: Math.random()*700, targetY: Math.random()*550} );
 	}
 }
 
-//Checks if a click is in any ducks hit box and removes those ducks
+//Checks if a click was on duck and removes hit duck
 function checkDuckHit(event) {
-	//Get click coordinates
 	var x = 0;
 	var y = 0;
-  var hit = false;
+    var hit = false;
 	var canvas = document.getElementById("game");
 
-	//Get coordinates of click
+	//Retrieves coordinates of the click
 	x = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
 	y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 
-	//Adjust to canvas coordinates
+	//Makes the click refer to an area within the canvas
 	x -= canvas.offsetLeft;
 	y -= canvas.offsetTop;
 
-	//Iterate over ducks
+	/*Checks if the click was on a duck.
+	xcooridinate checked first and then y coordinate
+	if the coordinates mathc, duck is removed from the duck array
+	if the click didn't hit a duck, the number of shots the player has
+    left is decreased by one
+	*/
 	for (i=0; i < ducks.length; i++) {
-		//xcoordinate check
 		if (x > ducks[i].posX && x < ducks[i].posX + duckSize) {
-			//ycoordinate check
 			if(y > ducks[i].posY && y < ducks[i].posY + duckSize) {
-				//Duck was hit, remove it
-				ducks.splice(i,1);
+				//Duck was hit, remove it, increase score
+				ducks.splice(i, 1);
 				hit = true;
-				score +=100;
+				score += 100;
 			}
 		}
 	}
-	if(hit === false){
+	if(hit == false){
 		shots--;
-
 	}
-
 }
 
-//Clears screen and draws all ducks
+//Main functioning of the game
+function updateGameLogic() {
+	if (gameState == "READY") {
+		if (level == 0)
+			drawText("Click to hunt ducks!",true);
+		else {
+			drawText("Level " + (level+1).toString() + "!",true);
+		}
+	}
+	else if (gameState == "PLAY") {
+		flapCount++;
+		targetChange++;
+
+		//Determines if the targets should be changed
+		//Decently high mod value so the ducks don't change targets too quickly
+		if (targetChange % 50 == 0)
+			updateTargets();
+
+		//move and redraw the canvas for the level
+		moveDucks();
+		drawDucks();
+		drawLives();
+
+		//Acts as the timer for the game to end
+		gameTime--;
+
+		if (gameTime == 0 || shots <= 0) {
+			gameState = "GAMEOVER";
+			ducksFly();
+		}
+	}
+	else if (gameState == "GAMEOVER") {
+		//Update count for flap animation
+		flapCount++;
+		//Move ducks off screen
+		moveDucks();
+		drawDucks();
+		drawText("Game Over! Final Score: " + score + "!" , false);
+	}
+}
+
+//Draws both ducks for the level
 function drawDucks() {
 	var canvas = document.getElementById("game");
 	var ctx = canvas.getContext('2d');
 
-	//Quack occasionally
-	if (Math.random() < .05)
-		quackSound.play();
+	//This will make a quacking sound occasionally
+	if (Math.random() < .1)
+		quack.play();
 
-	//clear canvas
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 
-	//Iterate over ducks
+	//Picks images for each duck depending on where their target is
+	//also alternates the position of the wings to simulate flaps
 	for (i=0; i < ducks.length; i++) {
 		duckImage = new Image();
-		//Switch direction duck faces based on target
 		if (ducks[i].targetX > ducks[i].posX) {
-			//Flap animation frame select
-			if (duckFlapCount % 14 < 7)
-				duckImage.src = "duck1right.png";
-			else duckImage.src = "duck2right.png";
+			if (flapCount % 16 < 8)
+				duckImage.src = "duckdownright.png";
+			else duckImage.src = "duckupright.png";
 		} else {
-
-			if (duckFlapCount % 14 < 7)
-				duckImage.src = "duck1left.png";
-			else duckImage.src = "duck2left.png";
+			if (flapCount % 16 < 8)
+				duckImage.src = "duckdownleft.png";
+			else duckImage.src = "duckupleft.png";
 		}
-		//Once loaded already, draws images
+
 		ctx.drawImage(duckImage,ducks[i].posX,ducks[i].posY,duckSize,duckSize);
 	}
 
 }
 
-//Randomly sets new targets for all ducks
+//Randomly sets new targets
 function updateTargets() {
 	for (i=0; i < ducks.length; i++) {
-		ducks[i].targetX = Math.random() * (750-duckSize);
-		ducks[i].targetY = Math.random() * 500;
+		ducks[i].targetX = Math.random() * (700-duckSize);
+		ducks[i].targetY = Math.random() * 550;
 	}
 }
 
-//Move ducks offscreen when game over
-function setDucksLeave() {
+//Sets target for ducks to fly off screen when the player gets a GAMEOVER gameState
+function ducksFly() {
 	var canvas = document.getElementById("game");
 
 	for (i=0; i < ducks.length; i++) {
@@ -236,54 +276,13 @@ function setDucksLeave() {
 	}
 }
 
-//Moves all ducks 1/20 of the way towards their target
+//Makes the ducks move toward their target
 function moveDucks() {
 	for (i=0; i < ducks.length; i++) {
 		var differenceX = ducks[i].targetX - ducks[i].posX;
 		var differenceY = ducks[i].targetY - ducks[i].posY;
 
-		ducks[i].posX += differenceX/20;
-		ducks[i].posY += differenceY/20;
+		ducks[i].posX = ducks[i].posX + differenceX/20;
+		ducks[i].posY = ducks[i].posY + differenceY/20;
 	}
-}
-
-function updateGameLogic() {
-
-	if (gameState == "TEXT") {
-		if (level == 0)
-			drawText("Click to play!",true);
-		else {
-			drawText("Level " + (level+1).toString() + "!",true);
-		}
-	}
-	else if (gameState == "PLAY") {
-		//Update count for flap animation
-		duckFlapCount++;
-		//update targets
-		targetChangeCount++;
-		if (targetChangeCount % 50 == 0)
-			updateTargets();
-		//move and redraw
-		moveDucks();
-		drawDucks();
-		drawLives();
-		//Decrease count toward losing
-		gameOverCount--;
-		//Check if gameover
-		if (gameOverCount == 0 || shots <= 0) {
-			gameState = "GAMEOVER";
-			//send ducks to fly offscreen
-			setDucksLeave();
-		}
-	}
-	else if (gameState == "GAMEOVER") {
-		//Update count for flap animation
-		duckFlapCount++;
-		//Move ducks off screen
-		moveDucks();
-		drawDucks();
-		drawText("Game Over! Final Score: " + score + "!" , false);
-
-	}
-
 }

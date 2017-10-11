@@ -6,17 +6,18 @@ body {
 }
 
 nav {
-	font-size: 300%;
 	text-align: center;
-	margin: auto;
-  width: 50%;
+  margin: auto;
+  font-size: 40px;
 }
 
 nav a {
 	background-color: #DF8D29;
 	padding: 2px;
   border: 1px solid black;
-  margin: 10px;
+  margin: 5%;
+  display: block;
+  box-shadow: 10px 10px 5px #246009;
 }
 
 nav li {
@@ -24,8 +25,11 @@ nav li {
 }
 
 aside {
+  width: 30%;
   float: left;
   margin-top: 10%;
+  margin-left: 5%;
+  margin-right: auto;
 }
 
 a:link, a:visited {
@@ -34,14 +38,23 @@ a:link, a:visited {
 }
 
 a:hover, a:active {
-	font-size: 125%;
+	font-size: 150%;
   color: #0B7503;
   text-decoration: underline;
 }
 
-#about, #credits {
+#about, #assets {
+  width: 65%;
 	font-family: serif;
-  font-size: 150%;
+  font-size: 120%;
+  margin: auto;
+  border: 1px solid black;
+	background-color: #DF8D29;
+	box-shadow: 10px 10px 5px #236008;
+	border-radius: 2px;
+  text-align: center;
+  padding: 10px;
+  margin-bottom: 2%;
 }
 
 #game {
@@ -75,6 +88,3 @@ a:hover, a:active {
 	text-align: center;
 }
 
-#hound {
-  text-align: center;
-}
