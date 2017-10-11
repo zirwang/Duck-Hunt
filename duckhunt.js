@@ -197,7 +197,7 @@ function updateGameLogic() {
 		if (level == 0)
 			drawText("Click to hunt ducks!",true);
 		else {
-			drawText("Level " + (level+1).toString() + "!",true);
+			drawText("Level " + (level+1).toString() + "!(click screen to start)",true);
 		}
 	}
 	else if (gameState == "PLAY") {

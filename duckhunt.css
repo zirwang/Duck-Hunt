@@ -9,6 +9,7 @@ nav {
 	text-align: center;
   margin: auto;
   font-size: 40px;
+
 }
 
 nav a {
@@ -46,6 +47,7 @@ a:hover, a:active {
 #about {
 	width: 45%;
 	font-size: 32px;
+
 }
 
 #assets {
@@ -90,7 +92,29 @@ ul {
   margin: auto;
   font-weight: bolder;
   font-size: 500%;
+	-webkit-animation-name: intro; /* Safari 4.0 - 8.0 */
+  -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
+  animation-name: intro;
+  animation-duration: 4s;
+	animation-iteration-count: infinite;
 }
+@-webkit-keyframes intro {
+    0%   {color: red;}
+    20%  {color: yellow;}
+		40% {color: green;}
+    60%  {color: blue;}
+    80%  {color: purple;}
+		100%  {color: orange;}
+}
+@keyframes intro {
+	0%   {color: red;}
+	20%  {color: yellow;}
+	40% {color: green;}
+	60%  {color: blue;}
+	80%  {color: purple;}
+	100%  {color: orange;}
+}
+
 
 #title, #game {
 	border: 1px solid black;
