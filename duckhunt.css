@@ -53,6 +53,10 @@ a:hover, a:active {
 	font-size: 120%;
 }
 
+ul {
+	list-style: none;
+}
+
 #about, #assets {
 	font-family: serif;
   margin: auto;
