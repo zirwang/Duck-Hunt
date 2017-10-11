@@ -1,6 +1,6 @@
 //Duck image width and height for checking if a duck was hit
 //Duck array to keep track of the two ducks and their positions
-//Makes sprite change to simulate flapping 
+//Makes sprite change to simulate flapping
 //How often the ducks pick a new target to travel to
 var duckSize = 60;
 var ducks = [];
@@ -23,13 +23,14 @@ window.onload = function() {
 	canvas.addEventListener("mousedown",handleClick,false);
 	//schedule game logic update
 	setInterval(updateGameLogic,1000/30);
+
 }
 
 //Sounds
-var quack = new Audio("quack.mp3");
-var startSound = new Audio("startSong.mp3");
-var shootSound = new Audio("gunShot.mp3");
-var nextLevelSound = new Audio("levelUp.mp3");
+var quack = new Audio("sounds/quack.mp3");
+var startSound = new Audio("sounds/startSong.mp3");
+var shootSound = new Audio("sounds/gunShot.mp3");
+var nextLevelSound = new Audio("sounds/levelUp.mp3");
 
 $(document).ready(function(e){
   var canvas = document.getElementById('game');
@@ -66,16 +67,16 @@ function drawLives() {
  };
 
  if(shots == 3){
-   life1.src = "heart.png";
-   life2.src = "heart.png";
-   life3.src = "heart.png";
+   life1.src = "images/heart.png";
+   life2.src = "images/heart.png";
+   life3.src = "images/heart.png";
  }
  else if(shots == 2){
-   life1.src = "heart.png";
-   life2.src = "heart.png";
+   life1.src = "images/heart.png";
+   life2.src = "images/heart.png";
  }
  else if(shots == 1){
-	 life1.src = "heart.png";
+	 life1.src = "images/heart.png";
  }
 
 
@@ -116,6 +117,7 @@ function handleClick(event) {
 		}
 	}
 	else if (gameState == "GAMEOVER") {
+		highscore(score);
 		//Replay
 		level = 0;
 		score = 0;
@@ -123,6 +125,7 @@ function handleClick(event) {
 		//clear out ducks array
 		ducks = [];
 		gameState = "READY";
+
 	}
 
 }
@@ -189,6 +192,7 @@ function checkDuckHit(event) {
 
 //Main functioning of the game
 function updateGameLogic() {
+	update_scores();
 	if (gameState == "READY") {
 		if (level == 0)
 			drawText("Click to hunt ducks!",true);
@@ -225,6 +229,7 @@ function updateGameLogic() {
 		moveDucks();
 		drawDucks();
 		drawText("Game Over! Final Score: " + score + "!" , false);
+
 	}
 }
 
@@ -245,12 +250,12 @@ function drawDucks() {
 		duckImage = new Image();
 		if (ducks[i].targetX > ducks[i].posX) {
 			if (flapCount % 16 < 8)
-				duckImage.src = "duckdownright.png";
-			else duckImage.src = "duckupright.png";
+				duckImage.src = "images/duckdownright.png";
+			else duckImage.src = "images/duckupright.png";
 		} else {
 			if (flapCount % 16 < 8)
-				duckImage.src = "duckdownleft.png";
-			else duckImage.src = "duckupleft.png";
+				duckImage.src = "images/duckdownleft.png";
+			else duckImage.src = "images/duckupleft.png";
 		}
 
 		ctx.drawImage(duckImage,ducks[i].posX,ducks[i].posY,duckSize,duckSize);

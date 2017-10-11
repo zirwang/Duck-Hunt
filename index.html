@@ -5,30 +5,49 @@
     <title> Hunting Ducks </title>
   	<meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="duckhunt.css">
+    <link rel="stylesheet" href="highscore.css">
+
 </head>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
+<script type="text/javascript" src="HighscoreAPI.js"></script>
 <script src="duckhunt.js"></script>
-
 <body>
     <h1 id="title">Hunting Ducks!</h1>
-    
+
     <aside>
       <nav>
         <a href="#about">How to play!</a>
         <a href="#assets">Assets!</a>
-        <li><img alt="A picture of a dog" src="dog_walking.gif"></li>
+        <li><img alt="A picture of a dog" src="images/dog_walking.gif"></li>
       </nav>
     </aside>
+
+    <div id="highdiv">
+    			<table id="hightable">
+    				<tr>
+    					<th>User</th>
+    					<th>Score</th>
+    				</tr>
+
+    			</table>
+    			<table id="myhightable">
+    				<tr>
+    					<th colspan="2">Your High Score</th>
+    				</tr>
+    				<tr id="myhighscore">
+    					<td colspan="2">You don't have one yet!</td>
+    				</tr>
+    			</table>
+    		</div>
 
 <canvas id="game" width="700" height="550">Your browser does not support the HTML5 canvas tag.</canvas>
 
 <!-- image provided by http://gamebanana.com/sprays/18714 under creative commons license -->
 <hr>
 <div id="about">
-		<p>Welcome to Hunting Ducks (No, it's not duck hunt even though all the imagery is identical). 
+		<p>Welcome to Hunting Ducks (No, it's not duck hunt even though all the imagery is identical).
       Point and click to shoot the ducks before they fly away. Each level gives you less time to hit both ducks.
       BUT! Be careful, if you run out of shots it's also - GAMEOVER!</p>
 	</div>
@@ -39,8 +58,10 @@
       <li>https://downloads.khinsider.com/game-soundtracks/album/duck-hunt (Game Sounds)</li>
       <li>http://www.mariomayhem.com/downloads/sprites/duck_hunt_nes_sprites.php (Duck sprites)</li>
       <li>https://giphy.com/stickers/hunt-Ft6CnjFo1oVxe (Dog gif)</li>
+      <li>https://raw.githubusercontent.com/vaielab/DuckHuntCss/master/stage.png (Background) </li>
 		</ul>
 	</div>
 </body>
+
 
 </html>
