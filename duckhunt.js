@@ -267,7 +267,7 @@ function drawDucks() {
 function updateTargets() {
 	for (i=0; i < ducks.length; i++) {
 		ducks[i].targetX = Math.random() * (700-duckSize);
-		ducks[i].targetY = Math.random() * 550;
+		ducks[i].targetY = Math.random() * (550-duckSize);
 	}
 }
 
@@ -276,8 +276,8 @@ function ducksFly() {
 	var canvas = document.getElementById("game");
 
 	for (i=0; i < ducks.length; i++) {
-		ducks[i].targetX = canvas.width/2;
-		ducks[i].targetY = -5*duckSize;
+		ducks[i].targetY = canvas.height/2;
+		ducks[i].targetX = -5*duckSize;
 	}
 }
 
